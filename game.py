@@ -1,6 +1,5 @@
 import pygame
 import random
-import tkinter
 pygame.init()
 
 WIDTH = 500
@@ -50,7 +49,7 @@ class snake(object):
     def move(self):
         for event in pygame.event.get():
             if event.type == pygame.quit:
-                pygame.quit()
+                return
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT]:
@@ -106,6 +105,9 @@ class snake(object):
         elif dx == 0 and dy == 1:
             self.body.append(cube((tail.pos[0], tail.pos[1]-1)))
         
+        self.body[-1].dirnx = dx
+        self.body[-1].dirny = dy
+        
         
 
     def draw(self, win):
@@ -149,26 +151,15 @@ def randomSnack(s):
 
 
 
-def message_box(subject, content):
-    root = tkinter.Tk()
-    root.attributes("-topmost", True)
-    root.withdraw()
-    tkinter.messagebox.showinfo(subject, content)
-    try:
-        root.destroy()
-    except:
-        pass
-
-
 def main():
     global s, snack
     win = pygame.display.set_mode((WIDTH, HEIGHT))
 
     s = snake((255, 0, 0), (10, 10))
 
-    clock = pygame.time.Clock()
     run = True
-    snack = cube(randomSnack(s), color = (0, 255, 0))
+    snack = cube(randomSnack(s), color = (0,255,0))
+    clock = pygame.time.Clock()
     while run:
         pygame.time.delay(50)
         clock.tick(10)
@@ -180,11 +171,12 @@ def main():
         for x in range(len(s.body)):
             if s.body[x].pos in list(map(lambda z:z.pos, s.body[x+1:])):
                 print('Score: ', len(s.body))
-                message_box('You Lost!', 'Play again...')
                 s.reset((10,10))
+                run = False
                 break
         redrawWindow(win)
 
 
 
 main()
+pygame.quit
